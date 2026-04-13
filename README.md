@@ -32,7 +32,7 @@ Asisten AI pribadi berbahasa Indonesia yang jalan di **STB Android yang sudah di
 
 ## 🛠 Hardware
 
-- **STB:** ZTE ZXV10 B866F (Telkomsel IndiHome 2023)
+- **STB:** ZTE ZXV10 B866F 
 - **Chipset:** Amlogic S905Y4 ARM 32-bit
 - **RAM:** 2GB
 - **OS:** Android TV 11 (rooted)
