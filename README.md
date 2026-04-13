@@ -1,6 +1,6 @@
 # 🤖 Anggira AI Assistant
 
-Asisten AI pribadi berbahasa Indonesia yang jalan di **STB Android yang sudah di-root** (ZTE ZXV10 B866F Telkomsel).
+Asisten AI pribadi berbahasa Indonesia yang jalan di **STB Android yang sudah di-root** 
 
 ## ✨ Fitur
 
