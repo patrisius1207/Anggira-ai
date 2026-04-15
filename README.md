@@ -1,182 +1,106 @@
-# 🤖 Anggira AI – Smart Home Assistant ESP32 + XiaoZhi MCP
+# 🤖 Anggira AI – Smart Home Intelligence System
 
-<p align="center">
-  <img src="https://img.shields.io/badge/ESP32-IoT-blue?style=for-the-badge"/>
-  <img src="https://img.shields.io/badge/Python-Async-green?style=for-the-badge"/>
-  <img src="https://img.shields.io/badge/AI-Groq%20LLM-orange?style=for-the-badge"/>
-  <img src="https://img.shields.io/badge/Telegram-Bot-blue?style=for-the-badge"/>
-  <img src="https://img.shields.io/badge/Status-Production-brightgreen?style=for-the-badge"/>
+<p align="center"> 
+  <img src="https://img.shields.io/badge/ESP32-S3%2FC3-blue?style=for-the-badge"/> 
+  <img src="https://img.shields.io/badge/AI-Groq%20LLM-orange?style=for-the-badge"/> 
+  <img src="https://img.shields.io/badge/MCP-Protocol-purple?style=for-the-badge"/> 
+  <img src="https://img.shields.io/badge/Telegram-Bot-blue?style=for-the-badge"/> 
+  <img src="https://img.shields.io/badge/Status-Active-brightgreen?style=for-the-badge"/> 
 </p>
 
-<p align="center">
-  <b>Smart Home System berbasis AI (Groq + MCP + ESP32 + STB Android)</b><br/>
-  Voice AI • Telegram Control • Sensor Rumah • Automation
-</p>
-
----
-
-## 🎬 Demo
-<p align="center">
-  <img src="https://user-images.githubusercontent.com/placeholder/dashboard.png" width="80%"/>
-</p>
-
-<p align="center">
-  <img src="https://user-images.githubusercontent.com/placeholder/telegram.gif" width="60%"/>
+<p align="center"> 
+  <b>⚡ AI Smart Home Ecosystem powered by ESP32 + STB Android + Groq + MCP</b><br/> 
+  Voice AI • Automation • IoT Sensor • Telegram Control 
 </p>
 
 ---
 
-## 🧠 Arsitektur Sistem
-📱 Telegram / Voice Input
-│
-▼
-🤖 Anggira AI (STB Android)
-Groq LLM + MCP Server + Python
-│
-┌────────┴────────┐
-▼ ▼
-ESP32-S3 ESP32-C3
-(XiaoZhi AI) (Sensor Rumah)
-│ │
-Voice AI Sensor + Servo Lampu
+## 🧠 System Architecture
+Sistem ini mengintegrasikan kecerdasan buatan (LLM) dengan perangkat keras IoT untuk menciptakan ekosistem rumah pintar yang responsif. Menggunakan **STB Android** sebagai otak pusat (Brain Server) yang menjembatani komunikasi antara pengguna, AI, dan sensor fisik.
 
 ---
 
-## 🧩 Komponen Sistem
+## 🧩 IoT Devices
 
-### 🔹 ESP32-C3 – Smart Sensor Node
-- 🌡 AHT20 → suhu & kelembapan  
-- 🌬 BMP280 → tekanan udara  
-- 💡 Servo → saklar lampu  
-- 🌐 Web dashboard monitoring  
-- ⏰ Jadwal otomatis lampu  
+### 🎤 ESP32-S3 (XiaoZhi AI Voice Node)
+**Voice Assistant • Real-time AI • MCP Client**
+* **Voice I/O:** Input dan output suara berkualitas tinggi.
+* **AI Integration:** Bertindak sebagai client untuk asisten AI via protokol MCP.
+* **Performance:** Eksekusi perintah dengan latensi rendah.
+* **Feedback:** Sistem umpan balik audio untuk interaksi yang lebih hidup.
 
----
+### 🏠 ESP32-C3 (Smart Home Sensor Node)
+**Environment Monitoring • Automation Controller**
+* **Sensors:** Menggunakan `AHT20` (Suhu & Kelembapan) dan `BMP280` (Tekanan Udara).
+* **Control:** Dilengkapi Relay untuk kendali lampu/perangkat listrik.
+* **Automation:** Sistem penjadwalan otomatis (scheduling) internal.
+* **Connectivity:** Berjalan sebagai REST API server lokal.
 
-### 🔹 ESP32-S3 – XiaoZhi Voice AI
-- 🎤 Voice assistant real-time  
-- 🔗 MCP client ke Anggira AI  
-- 🎵 Audio & voice interaction  
-
-📦 Firmware: https://github.com/78/xiaozhi-esp32
-
----
-
-### 🔹 STB Android – AI Core System
-- 📦 Device: ZTE ZXV10 B866F (Rooted)  
-- 🧠 Menjalankan:
-  - Groq LLM AI
-  - Telegram Bot
-  - MCP Server
-  - Web Dashboard
+### 🧠 STB Android (AI Brain Server)
+**Core Intelligence Hub**
+* **Hardware:** ZTE ZXV10 B866F (Rooted).
+* **Processing:** Pemrosesan bahasa alami menggunakan Groq LLM.
+* **Control:** Berfungsi sebagai pusat kendali Telegram Bot dan gateway MCP server.
+* **Interface:** Dilengkapi dengan sistem dashboard web.
 
 ---
 
-## ✨ Fitur
+## ✨ Features
 
-🤖 AI Assistant  
-- Chat AI Bahasa Indonesia  
-- Voice AI (XiaoZhi MCP)  
-- Multi-device integration  
-
-🏠 Smart Home  
-- Lampu ON/OFF  
-- Jadwal otomatis  
-- Kontrol jarak jauh  
-
-📊 Monitoring  
-- Suhu  
-- Kelembapan  
-- Tekanan udara  
-- Status lampu  
-
-🌐 Dual Dashboard  
-- ESP32 Dashboard (Sensor Rumah)  
-- STB Dashboard (AI System)  
-
-📱 Telegram Bot  
-- Kontrol perangkat  
-- Cek sensor rumah  
-- Chat AI langsung  
+* **🤖 AI System:** Chat Bahasa Indonesia yang natural, Voice assistant real-time, dan eksekusi tool MCP secara langsung.
+* **🏠 Smart Home:** Kontrol lampu (ON/OFF), penjadwalan otomatis, dan kendali jarak jauh via Telegram.
+* **📊 Monitoring:** Pelacakan suhu, kelembapan, tekanan udara, serta status perangkat secara live.
 
 ---
 
-## 📋 Telegram Commands
+## 📱 Telegram Commands
 
-| Command | Fungsi |
-|--------|--------|
-| `/start` | Start bot |
-| `sensor rumah` | Data sensor |
-| `lampu nyala` | ON lampu |
-| `lampu mati` | OFF lampu |
-| `cuaca` | Info cuaca |
-| `berita` | News |
-| `jam` | Waktu |
-| bebas | Chat AI |
+| Command | Function |
+| :--- | :--- |
+| `sensor rumah` | Mengambil data sensor terbaru |
+| `lampu nyala` | Menyalakan lampu |
+| `lampu mati` | Mematikan lampu |
+| `cuaca` | Informasi cuaca terkini |
+| `berita` | Berita terbaru |
+| `jam` | Waktu sistem saat ini |
 
 ---
 
-## 🌐 API ESP32-C3
+## 🌐 Dashboard System
 
-### 📊 Sensor Rumah
-GET /sensor_rumah
+| Module | URL |
+| :--- | :--- |
+| **ESP32 Sensor** | `http://192.168.1.222` |
+| **STB AI Panel** | `http://[IP_STB]:8088` |
 
-```json
-{
-  "nama": "sensor rumah",
-  "temperature": 27.5,
-  "humidity": 60.2,
-  "pressure": 1008.3,
-  "lamp": "on"
-}
-💡 Lamp Control
-GET /on
-GET /off
-⏰ Jadwal Lampu
-GET /set?on=18:00&off=06:00
+---
 
-🚀 Instalasi (STB / Termux)
-pkg update && pkg upgrade -y
-pkg install python git openssh -y
-pip install websockets
-git clone https://github.com/patrisius1207/Anggira-ai.git
-cd Anggira-ai
-export MCP_ENDPOINT="wss://api.xiaozhi.me/mcp/?token=TOKEN"
-export TELEGRAM_BOT_TOKEN="TOKEN"
-export GROQ_API_KEY="gsk_..."
-export OPENWEATHER_API_KEY="..."
-python anggira.py
-🌐 Dashboard Access
-System	URL
-ESP32 Sensor	http://192.168.1.222
+## 🔗 Ecosystem Integration
 
-STB AI Dashboard	http://IP_STB:8088
-📁 Project Structure
-Anggira-ai/
-├── anggira.py        # AI + Telegram + MCP Core
-├── dashboard.py      # Web Dashboard STB
-├── watchdog.sh       # Auto restart system
-├── start_stb.sh      # Boot automation
-🔐 API Services
-Groq LLM → https://console.groq.com
-OpenWeather → https://openweathermap.org/api
-Telegram Bot → https://t.me/BotFather
-XiaoZhi MCP → https://xiaozhi.me
-⚠️ Notes
-Optimized untuk ARM 32-bit (STB Android)
-Jangan upload API key ke GitHub
-Semua device harus dalam 1 jaringan WiFi
-Gunakan watchdog untuk stabilitas
+* **Groq AI:** [console.groq.com](https://console.groq.com)
+* **OpenWeather:** [openweathermap.org](https://openweathermap.org/api)
+* **Telegram Bot:** [t.me/BotFather](https://t.me/BotFather)
+* **XiaoZhi MCP:** [xiaozhi.me](https://xiaozhi.me)
+* **Firmware:** [github.com/78/xiaozhi-esp32](https://github.com/78/xiaozhi-esp32)
 
-🛣 Roadmap
+---
+
+## ⚠️ System Notes
+
+1.  **Security:** Jangan mengekspos API key ke publik (GitHub).
+2.  **Networking:** Semua perangkat harus berada dalam satu jaringan WiFi.
+3.  **Root Access:** STB Android wajib di-root untuk akses penuh.
+4.  **Stability:** Gunakan sistem watchdog untuk menjaga stabilitas perangkat.
+
+---
+
+## 👨‍💻 Author
+patrisius1207 
 
 
-👨‍💻 Author
-patrisius1207
+---
 
-⭐ Support
-
-Jika project ini membantu:
-⭐ Star repo ini
-🍴 Fork & improve
-🚀 Share ke komunitas IoT
+## ⭐ Support Project
+* ⭐ **Star** repository ini
+* 🍴 **Fork** & improve kode
+* 🚀 **Share** ke komunitas IoT
