@@ -62,6 +62,38 @@ async def lamp_off():
     loop = asyncio.get_event_loop()
     return await loop.run_in_executor(executor, esp32_get, "/off")
 
+# ===== SENSOR RUMAH =====
+def esp32_sensor():
+    try:
+        return urllib.request.urlopen(f"{ESP32_URL}/sensor_rumah").read().decode()
+    except Exception as e:
+        return f"Sensor error: {e}"
+
+async def get_sensor_rumah():
+    loop = asyncio.get_event_loop()
+    return await loop.run_in_executor(executor, esp32_sensor)
+
+# ===== JADWAL LAMPU =====
+def esp32_get_schedule():
+    try:
+        return urllib.request.urlopen(f"{ESP32_URL}/jadwal").read().decode()
+    except Exception as e:
+        return f"Jadwal error: {e}"
+
+def esp32_set_schedule(on, off):
+    try:
+        return urllib.request.urlopen(f"{ESP32_URL}/set?on={on}&off={off}").read().decode()
+    except Exception as e:
+        return f"Set jadwal error: {e}"
+
+async def get_schedule():
+    loop = asyncio.get_event_loop()
+    return await loop.run_in_executor(executor, esp32_get_schedule)
+
+async def set_schedule(on, off):
+    loop = asyncio.get_event_loop()
+    return await loop.run_in_executor(executor, esp32_set_schedule, on, off)
+
 # ================= WEATHER =================
 async def get_weather(city):
     try:
@@ -130,6 +162,29 @@ async def telegram_loop():
                     await tg_send(chat_id, "Halo! Anggira siap 🤖")
                     continue
 
+                # ===== SENSOR =====
+                if "sensor" in text_lower or "rumah" in text_lower:
+                    await tg_send(chat_id, "Mengambil data sensor rumah...")
+                    result = await get_sensor_rumah()
+                    await tg_send(chat_id, result)
+                    continue
+
+                # ===== JADWAL =====
+                if "jadwal" in text_lower:
+                    await tg_send(chat_id, "Mengambil jadwal lampu...")
+                    result = await get_schedule()
+                    await tg_send(chat_id, result)
+                    continue
+
+                if "set jadwal" in text_lower:
+                    jam = re.findall(r"\d{2}:\d{2}", text)
+                    if len(jam) >= 2:
+                        await set_schedule(jam[0], jam[1])
+                        await tg_send(chat_id, f"Jadwal disimpan:\nON {jam[0]}\nOFF {jam[1]}")
+                    else:
+                        await tg_send(chat_id, "Format: set jadwal 18:00 06:00")
+                    continue
+
                 # ===== LAMPU =====
                 if "lampu" in text_lower or "teras" in text_lower:
                     if any(k in text_lower for k in ["nyala", "hidup", "on"]):
@@ -153,88 +208,76 @@ async def telegram_loop():
             print("[TG ERROR]", e)
             await asyncio.sleep(5)
 
-# ================= MCP (XIOZHI) =================
+# ================= MCP =================
 async def handle_mcp():
-    print("Connecting to XiaoZhi MCP...")
-
     async with websockets.connect(MCP_ENDPOINT) as ws:
-        print("✅ Connected to XiaoZhi!")
 
         async for message in ws:
-            try:
-                data = json.loads(message)
-                method = data.get("method", "")
-                msg_id = data.get("id")
+            data = json.loads(message)
+            method = data.get("method", "")
+            msg_id = data.get("id")
 
-                print("[MCP]", method)
+            if method == "initialize":
+                await ws.send(json.dumps({
+                    "jsonrpc": "2.0",
+                    "id": msg_id,
+                    "result": {"protocolVersion": "2024-11-05"}
+                }))
 
-                if method == "initialize":
-                    await ws.send(json.dumps({
-                        "jsonrpc": "2.0",
-                        "id": msg_id,
-                        "result": {"protocolVersion": "2024-11-05"}
-                    }))
+            elif method == "tools/list":
+                await ws.send(json.dumps({
+                    "jsonrpc": "2.0",
+                    "id": msg_id,
+                    "result": {
+                        "tools": [
+                            {"name": "lamp_on"},
+                            {"name": "lamp_off"},
+                            {"name": "news"},
+                            {"name": "weather"},
+                            {"name": "time"},
+                            {"name": "sensor_rumah"},
+                            {"name": "get_schedule"},
+                            {"name": "set_schedule"}
+                        ]
+                    }
+                }))
 
-                elif method == "tools/list":
-                    await ws.send(json.dumps({
-                        "jsonrpc": "2.0",
-                        "id": msg_id,
-                        "result": {
-                            "tools": [
-                                {"name": "lamp_on"},
-                                {"name": "lamp_off"},
-                                {"name": "news"},
-                                {"name": "weather"},
-                                {"name": "time"}
-                            ]
-                        }
-                    }))
+            elif method == "tools/call":
+                tool = data["params"]["name"]
 
-                elif method == "tools/call":
-                    tool = data["params"]["name"]
+                if tool == "lamp_on":
+                    result = await lamp_on()
+                elif tool == "lamp_off":
+                    result = await lamp_off()
+                elif tool == "news":
+                    result = await get_news()
+                elif tool == "weather":
+                    result = await get_weather(DEFAULT_CITY)
+                elif tool == "time":
+                    result = datetime.now().strftime("%H:%M")
+                elif tool == "sensor_rumah":
+                    result = await get_sensor_rumah()
+                elif tool == "get_schedule":
+                    result = await get_schedule()
+                elif tool == "set_schedule":
+                    args = data["params"].get("arguments", {})
+                    result = await set_schedule(args.get("on", "18:00"), args.get("off", "06:00"))
+                else:
+                    result = "Tool tidak dikenal"
 
-                    if tool == "lamp_on":
-                        result = await lamp_on()
-                    elif tool == "lamp_off":
-                        result = await lamp_off()
-                    elif tool == "news":
-                        result = await get_news()
-                    elif tool == "weather":
-                        result = await get_weather(DEFAULT_CITY)
-                    elif tool == "time":
-                        result = datetime.now().strftime("%H:%M")
-                    else:
-                        result = "Tool tidak dikenal"
-
-                    await ws.send(json.dumps({
-                        "jsonrpc": "2.0",
-                        "id": msg_id,
-                        "result": {
-                            "content": [{"type": "text", "text": result}]
-                        }
-                    }))
-
-            except Exception as e:
-                print("[MCP ERROR]", e)
-
-async def mcp_loop():
-    while True:
-        try:
-            if MCP_ENDPOINT:
-                await handle_mcp()
-            else:
-                await asyncio.sleep(5)
-        except Exception as e:
-            print("[MCP DISCONNECT]", e)
-            await asyncio.sleep(5)
+                await ws.send(json.dumps({
+                    "jsonrpc": "2.0",
+                    "id": msg_id,
+                    "result": {"content": [{"type": "text", "text": result}]}
+                }))
 
 # ================= MAIN =================
 async def main():
-    print("🚀 Anggira FULL ONLINE (FINAL)")
+    print("🚀 Anggira FULL + SENSOR + JADWAL")
 
     await asyncio.gather(
         telegram_loop(),
-        mcp_loop()
+        handle_mcp()
     )
 
 if __name__ == "__main__":
