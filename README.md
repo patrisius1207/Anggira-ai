@@ -15,92 +15,96 @@
 
 ---
 
-## 🧠 System Architecture
-Sistem ini mengintegrasikan kecerdasan buatan (LLM) dengan perangkat keras IoT untuk menciptakan ekosistem rumah pintar yang responsif. Menggunakan **STB Android** sebagai otak pusat (Brain Server) yang menjembatani komunikasi antara pengguna, AI, dan sensor fisik.
+## 🌐 Language / Bahasa
+* [English](#english)
+* [Bahasa Indonesia](#bahasa-indonesia)
 
 ---
 
-## 🧩 IoT Devices
+<div id="english"></div>
 
-### 🎤 ESP32-S3 (XiaoZhi AI Voice Node)
-**Voice Assistant • Real-time AI • MCP Client**
-* **Voice I/O:** Input dan output suara berkualitas tinggi.
-* **AI Integration:** Bertindak sebagai client untuk asisten AI via protokol MCP.
-* **Performance:** Eksekusi perintah dengan latensi rendah.
-* **Feedback:** Sistem umpan balik audio untuk interaksi yang lebih hidup.
+## 🇺🇸 English Version
 
-### 🏠 ESP32-C3 (Smart Home Sensor Node)
-**Environment Monitoring • Automation Controller**
-* **Sensors:** Menggunakan `AHT20` (Suhu & Kelembapan) dan `BMP280` (Tekanan Udara).
-* **Control:** Dilengkapi Relay untuk kendali lampu/perangkat listrik.
-* **Automation:** Sistem penjadwalan otomatis (scheduling) internal.
-* **Connectivity:** Berjalan sebagai REST API server lokal.
+### 🧠 System Architecture
+This system integrates Large Language Models (LLM) with IoT hardware to create a responsive smart home ecosystem. It utilizes a **Rooted Android STB** as the Brain Server to bridge communication between users, AI, and physical sensors.
 
-### 🧠 STB Android (AI Brain Server)
-**Core Intelligence Hub**
-* **Hardware:** ZTE ZXV10 B866F (Rooted).
-* **Processing:** Pemrosesan bahasa alami menggunakan Groq LLM.
-* **Control:** Berfungsi sebagai pusat kendali Telegram Bot dan gateway MCP server.
-* **Interface:** Dilengkapi dengan sistem dashboard web.
+### 🧩 IoT Devices
+* **🎤 ESP32-S3 (XiaoZhi AI Voice Node):** Handles high-quality voice I/O and acts as an MCP client for real-time AI interaction with low latency.
+* **🏠 ESP32-C3 (Smart Home Sensor Node):** Monitors environment via `AHT20` & `BMP280` sensors and controls appliances via Relay.
+* **🧠 STB Android (AI Brain Server):** Powered by ZTE ZXV10 B866F. Processes natural language via Groq LLM and manages the Telegram Bot gateway.
 
----
+### ✨ Features
+* **AI System:** Natural conversational AI, Real-time voice assistant, and direct MCP tool execution.
+* **Smart Home:** Remote lamp control, automated scheduling, and Telegram integration.
+* **Monitoring:** Live tracking of temperature, humidity, and atmospheric pressure.
 
-## ✨ Features
-
-* **🤖 AI System:** Chat Bahasa Indonesia yang natural, Voice assistant real-time, dan eksekusi tool MCP secara langsung.
-* **🏠 Smart Home:** Kontrol lampu (ON/OFF), penjadwalan otomatis, dan kendali jarak jauh via Telegram.
-* **📊 Monitoring:** Pelacakan suhu, kelembapan, tekanan udara, serta status perangkat secara live.
-
----
-
-## 📱 Telegram Commands
-
+### 📱 Telegram Commands
 | Command | Function |
+| :--- | :--- |
+| `sensor rumah` | Get latest sensor data |
+| `lampu nyala` | Turn ON the lamp |
+| `lampu mati` | Turn OFF the lamp |
+| `cuaca` | Real-time weather info |
+| `berita` | Latest news updates |
+| `jam` | Current system time |
+
+---
+
+<div id="bahasa-indonesia"></div>
+
+## 🇮🇩 Bahasa Indonesia
+
+### 🧠 Arsitektur Sistem
+Sistem ini mengintegrasikan LLM dengan hardware IoT untuk menciptakan ekosistem rumah pintar yang responsif. Menggunakan **STB Android (Rooted)** sebagai Brain Server yang menjembatani komunikasi antara pengguna, AI, dan sensor fisik.
+
+### 🧩 Perangkat IoT
+* **🎤 ESP32-S3 (XiaoZhi AI Voice Node):** Menangani input/output suara dan berperan sebagai MCP client untuk interaksi AI real-time dengan latensi rendah.
+* **🏠 ESP32-C3 (Smart Home Sensor Node):** Memantau lingkungan melalui sensor `AHT20` & `BMP280` serta mengontrol perangkat via Relay.
+* **🧠 STB Android (AI Brain Server):** Menggunakan ZTE ZXV10 B866F. Memproses bahasa natural via Groq LLM dan mengelola gateway Telegram Bot.
+
+### ✨ Fitur Utama
+* **Sistem AI:** Percakapan AI yang natural, asisten suara real-time, dan eksekusi tool MCP secara langsung.
+* **Smart Home:** Kontrol lampu jarak jauh, penjadwalan otomatis, dan integrasi Telegram.
+* **Monitoring:** Pelacakan langsung suhu, kelembapan, dan tekanan udara.
+
+### 📱 Perintah Telegram
+| Perintah | Fungsi |
 | :--- | :--- |
 | `sensor rumah` | Mengambil data sensor terbaru |
 | `lampu nyala` | Menyalakan lampu |
 | `lampu mati` | Mematikan lampu |
-| `cuaca` | Informasi cuaca terkini |
-| `berita` | Berita terbaru |
+| `cuaca` | Info cuaca real-time |
+| `berita` | Berita terkini |
 | `jam` | Waktu sistem saat ini |
 
 ---
 
-## 🌐 Dashboard System
-
-| Module | URL |
+## 🌐 Dashboard & Integration
+| Module | URL / Resource |
 | :--- | :--- |
 | **ESP32 Sensor** | `http://192.168.1.222` |
 | **STB AI Panel** | `http://[IP_STB]:8088` |
-
----
-
-## 🔗 Ecosystem Integration
-
-* **Groq AI:** [console.groq.com](https://console.groq.com)
-* **OpenWeather:** [openweathermap.org](https://openweathermap.org/api)
-* **Telegram Bot:** [t.me/BotFather](https://t.me/BotFather)
-* **XiaoZhi MCP:** [xiaozhi.me](https://xiaozhi.me)
-* **Firmware:** [github.com/78/xiaozhi-esp32](https://github.com/78/xiaozhi-esp32)
+| **Groq AI** | [console.groq.com](https://console.groq.com) |
+| **OpenWeather** | [openweathermap.org](https://openweathermap.org/api) |
+| **Firmware** | [github.com/78/xiaozhi-esp32](https://github.com/78/xiaozhi-esp32) |
 
 ---
 
 ## ⚠️ System Notes
-
-1.  **Security:** Jangan mengekspos API key ke publik (GitHub).
-2.  **Networking:** Semua perangkat harus berada dalam satu jaringan WiFi.
-3.  **Root Access:** STB Android wajib di-root untuk akses penuh.
-4.  **Stability:** Gunakan sistem watchdog untuk menjaga stabilitas perangkat.
+1.  **Security:** Do not expose API keys to public repositories.
+2.  **Networking:** All devices must be on the same WiFi network.
+3.  **Root Access:** Android STB must be rooted for full access.
+4.  **Stability:** Use watchdog timers to prevent system hangs.
 
 ---
 
 ## 👨‍💻 Author
-patrisius1207 
-
+**patrisius1207**
+> 🚀 IoT • AI • Embedded Systems
 
 ---
 
 ## ⭐ Support Project
-* ⭐ **Star** repository ini
-* 🍴 **Fork** & improve kode
-* 🚀 **Share** ke komunitas IoT
+* ⭐ **Star** this repository
+* 🍴 **Fork** & improve the code
+* 🚀 **Share** with the IoT community
