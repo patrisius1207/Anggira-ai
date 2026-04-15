@@ -16,7 +16,6 @@
 ---
 
 ## 🎬 Demo
-
 <p align="center">
   <img src="https://user-images.githubusercontent.com/placeholder/dashboard.png" width="80%"/>
 </p>
@@ -28,8 +27,6 @@
 ---
 
 ## 🧠 Arsitektur Sistem
-
-
 📱 Telegram / Voice Input
 │
 ▼
@@ -42,7 +39,6 @@ ESP32-S3 ESP32-C3
 (XiaoZhi AI) (Sensor Rumah)
 │ │
 Voice AI Sensor + Servo Lampu
-
 
 ---
 
@@ -62,12 +58,11 @@ Voice AI Sensor + Servo Lampu
 - 🔗 MCP client ke Anggira AI  
 - 🎵 Audio & voice interaction  
 
-📦 Firmware:
-👉 https://github.com/78/xiaozhi-esp32
+📦 Firmware: https://github.com/78/xiaozhi-esp32
 
 ---
 
-### 🔹 STB Android – AI Core
+### 🔹 STB Android – AI Core System
 - 📦 Device: ZTE ZXV10 B866F (Rooted)  
 - 🧠 Menjalankan:
   - Groq LLM AI
@@ -77,32 +72,32 @@ Voice AI Sensor + Servo Lampu
 
 ---
 
-## ✨ Fitur Utama
+## ✨ Fitur
 
-### 🤖 AI Assistant
-- Chat AI Bahasa Indonesia
-- Voice AI (XiaoZhi)
-- MCP integration
+🤖 AI Assistant  
+- Chat AI Bahasa Indonesia  
+- Voice AI (XiaoZhi MCP)  
+- Multi-device integration  
 
-### 🏠 Smart Home
-- Lampu ON/OFF
-- Jadwal otomatis
-- Kontrol jarak jauh
+🏠 Smart Home  
+- Lampu ON/OFF  
+- Jadwal otomatis  
+- Kontrol jarak jauh  
 
-### 📊 Monitoring
-- 🌡 Suhu
-- 💧 Kelembapan
-- 🌬 Tekanan udara
-- 💡 Status lampu
+📊 Monitoring  
+- Suhu  
+- Kelembapan  
+- Tekanan udara  
+- Status lampu  
 
-### 🌐 Dual Dashboard
-- ESP32 Dashboard → sensor rumah
-- STB Dashboard → AI system
+🌐 Dual Dashboard  
+- ESP32 Dashboard (Sensor Rumah)  
+- STB Dashboard (AI System)  
 
-### 📱 Telegram Bot
-- Kontrol perangkat
-- Ambil sensor rumah
-- Chat AI langsung
+📱 Telegram Bot  
+- Kontrol perangkat  
+- Cek sensor rumah  
+- Chat AI langsung  
 
 ---
 
@@ -124,8 +119,8 @@ Voice AI Sensor + Servo Lampu
 ## 🌐 API ESP32-C3
 
 ### 📊 Sensor Rumah
-
 GET /sensor_rumah
+
 ```json
 {
   "nama": "sensor rumah",
@@ -141,19 +136,15 @@ GET /off
 GET /set?on=18:00&off=06:00
 
 🚀 Instalasi (STB / Termux)
-1. Install Dependencies
 pkg update && pkg upgrade -y
 pkg install python git openssh -y
 pip install websockets
-2. Clone Repo
 git clone https://github.com/patrisius1207/Anggira-ai.git
 cd Anggira-ai
-3. Environment Variables
 export MCP_ENDPOINT="wss://api.xiaozhi.me/mcp/?token=TOKEN"
 export TELEGRAM_BOT_TOKEN="TOKEN"
 export GROQ_API_KEY="gsk_..."
 export OPENWEATHER_API_KEY="..."
-4. Run System
 python anggira.py
 🌐 Dashboard Access
 System	URL
@@ -167,34 +158,25 @@ Anggira-ai/
 ├── watchdog.sh       # Auto restart system
 ├── start_stb.sh      # Boot automation
 🔐 API Services
-Service	Link
-Groq LLM	https://console.groq.com
-
-OpenWeather	https://openweathermap.org/api
-
-Telegram Bot	@BotFather
-XiaoZhi MCP	https://xiaozhi.me
+Groq LLM → https://console.groq.com
+OpenWeather → https://openweathermap.org/api
+Telegram Bot → https://t.me/BotFather
+XiaoZhi MCP → https://xiaozhi.me
 ⚠️ Notes
 Optimized untuk ARM 32-bit (STB Android)
 Jangan upload API key ke GitHub
 Semua device harus dalam 1 jaringan WiFi
 Gunakan watchdog untuk stabilitas
+
 🛣 Roadmap
- Kontrol AC / IR Remote
- Voice offline mode
- AI CCTV detection
- Notifikasi otomatis Telegram
- Smart energy monitoring
+
+
 👨‍💻 Author
+patrisius1207
 
-Patrisius Wogananda
-
-⭐ Support Project
+⭐ Support
 
 Jika project ini membantu:
-
 ⭐ Star repo ini
 🍴 Fork & improve
 🚀 Share ke komunitas IoT
-
-💡 "Smart home bukan hanya otomatis, tapi harus bisa memahami penggunanya."
