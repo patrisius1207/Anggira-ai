@@ -126,8 +126,6 @@ Voice AI Sensor + Servo Lampu
 ### 📊 Sensor Rumah
 
 GET /sensor_rumah
-
-
 ```json
 {
   "nama": "sensor rumah",
@@ -141,6 +139,7 @@ GET /on
 GET /off
 ⏰ Jadwal Lampu
 GET /set?on=18:00&off=06:00
+
 🚀 Instalasi (STB / Termux)
 1. Install Dependencies
 pkg update && pkg upgrade -y
