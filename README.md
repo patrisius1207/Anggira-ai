@@ -100,7 +100,6 @@ Sistem ini mengintegrasikan LLM dengan hardware IoT untuk menciptakan ekosistem 
 
 ## 👨‍💻 Author
 **patrisius1207**
-> 🚀 IoT • AI • Embedded Systems
 
 ---
 
