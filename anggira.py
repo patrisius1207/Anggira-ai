@@ -3,8 +3,8 @@ import websockets
 import json
 import urllib.request
 import urllib.error
+import urllib.parse
 import re
-import subprocess
 import os
 from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor
@@ -14,10 +14,14 @@ MCP_ENDPOINT = os.environ.get('MCP_ENDPOINT', '')
 TELEGRAM_BOT_TOKEN = os.environ.get('TELEGRAM_BOT_TOKEN', '')
 GROQ_API_KEY = os.environ.get('GROQ_API_KEY') or "ISI_API_KEY_KAMU"
 OPENWEATHER_API_KEY = os.environ.get('OPENWEATHER_API_KEY', '')
+
 ESP32_URL = "http://192.168.1.222"
+MUSIC_SERVER = "http://192.168.1.3:8080"
 DEFAULT_CITY = "Salatiga"
 
 SYSTEM_PROMPT = """Kamu adalah Anggira, asisten AI pribadi yang ramah.
+Jika user meminta memutar lagu, WAJIB gunakan tool play_song.
+Jangan gunakan search_music.
 Jawab singkat, jelas, bahasa Indonesia natural."""
 
 executor = ThreadPoolExecutor(max_workers=4)
@@ -25,7 +29,6 @@ executor = ThreadPoolExecutor(max_workers=4)
 # ================= GROQ =================
 def _groq_chat(messages):
     url = "https://api.groq.com/openai/v1/chat/completions"
-
     data = json.dumps({
         "model": "llama-3.3-70b-versatile",
         "messages": [{"role": "system", "content": SYSTEM_PROMPT}] + messages,
@@ -35,8 +38,7 @@ def _groq_chat(messages):
 
     req = urllib.request.Request(url, data=data, headers={
         "Authorization": f"Bearer {GROQ_API_KEY}",
-        "Content-Type": "application/json",
-        "User-Agent": "Mozilla/5.0"
+        "Content-Type": "application/json"
     })
 
     with urllib.request.urlopen(req, timeout=20) as r:
@@ -47,12 +49,35 @@ async def groq_chat(messages):
     loop = asyncio.get_event_loop()
     return await loop.run_in_executor(executor, _groq_chat, messages)
 
-# ================= ESP32 =================
+# ================= MUSIC =================
+def play_song_http(song, artist=""):
+    try:
+        url = f"{MUSIC_SERVER}/stream_pcm?song={urllib.parse.quote(song)}&artist={urllib.parse.quote(artist)}"
+        return urllib.request.urlopen(url).read().decode()
+    except Exception as e:
+        return f"Music error: {e}"
+
+async def play_song(song, artist=""):
+    loop = asyncio.get_event_loop()
+    return await loop.run_in_executor(executor, play_song_http, song, artist)
+
+# ================= ESP32 (FIX ONLY HERE) =================
 def esp32_get(path):
     try:
-        return urllib.request.urlopen(f"{ESP32_URL}{path}").read().decode()
+        url = f"{ESP32_URL}{path}"
+        req = urllib.request.Request(url, method="GET")
+
+        with urllib.request.urlopen(req, timeout=5) as r:
+            return r.read().decode(errors="ignore")
+
+    except urllib.error.HTTPError as e:
+        return f"HTTPError {e.code}: {e.reason}"
+
+    except urllib.error.URLError as e:
+        return f"URLError: {e.reason}"
+
     except Exception as e:
-        return f"ESP32 error: {e}"
+        return f"ESP32 error: {str(e)}"
 
 async def lamp_on():
     loop = asyncio.get_event_loop()
@@ -62,7 +87,7 @@ async def lamp_off():
     loop = asyncio.get_event_loop()
     return await loop.run_in_executor(executor, esp32_get, "/off")
 
-# ===== SENSOR RUMAH =====
+# ================= SENSOR =================
 def esp32_sensor():
     try:
         return urllib.request.urlopen(f"{ESP32_URL}/sensor_rumah").read().decode()
@@ -73,7 +98,7 @@ async def get_sensor_rumah():
     loop = asyncio.get_event_loop()
     return await loop.run_in_executor(executor, esp32_sensor)
 
-# ===== JADWAL LAMPU =====
+# ================= JADWAL =================
 def esp32_get_schedule():
     try:
         return urllib.request.urlopen(f"{ESP32_URL}/jadwal").read().decode()
@@ -113,105 +138,9 @@ async def get_news():
     except Exception as e:
         return f"News error: {e}"
 
-# ================= TELEGRAM =================
-def _http_get(url):
-    with urllib.request.urlopen(url) as r:
-        return json.loads(r.read().decode())
-
-def _http_post(url, data):
-    req = urllib.request.Request(url, data=data, headers={"Content-Type": "application/json"})
-    with urllib.request.urlopen(req) as r:
-        return json.loads(r.read().decode())
-
-async def tg_send(chat_id, text):
-    url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
-    data = json.dumps({"chat_id": chat_id, "text": text}).encode()
-
-    loop = asyncio.get_event_loop()
-    await loop.run_in_executor(executor, _http_post, url, data)
-
-async def telegram_loop():
-    if not TELEGRAM_BOT_TOKEN:
-        print("[TG] Disabled")
-        return
-
-    print("[TG] Aktif")
-    offset = None
-
-    while True:
-        try:
-            url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/getUpdates?timeout=10"
-            if offset:
-                url += f"&offset={offset}"
-
-            data = await asyncio.get_event_loop().run_in_executor(executor, _http_get, url)
-
-            for update in data.get("result", []):
-                offset = update["update_id"] + 1
-                msg = update.get("message", {})
-                chat_id = msg.get("chat", {}).get("id")
-                text = msg.get("text", "")
-
-                if not text:
-                    continue
-
-                text_lower = text.lower()
-                print("[TG]", text)
-
-                if text == "/start":
-                    await tg_send(chat_id, "Halo! Anggira siap 🤖")
-                    continue
-
-                # ===== SENSOR =====
-                if "sensor" in text_lower or "rumah" in text_lower:
-                    await tg_send(chat_id, "Mengambil data sensor rumah...")
-                    result = await get_sensor_rumah()
-                    await tg_send(chat_id, result)
-                    continue
-
-                # ===== JADWAL =====
-                if "jadwal" in text_lower:
-                    await tg_send(chat_id, "Mengambil jadwal lampu...")
-                    result = await get_schedule()
-                    await tg_send(chat_id, result)
-                    continue
-
-                if "set jadwal" in text_lower:
-                    jam = re.findall(r"\d{2}:\d{2}", text)
-                    if len(jam) >= 2:
-                        await set_schedule(jam[0], jam[1])
-                        await tg_send(chat_id, f"Jadwal disimpan:\nON {jam[0]}\nOFF {jam[1]}")
-                    else:
-                        await tg_send(chat_id, "Format: set jadwal 18:00 06:00")
-                    continue
-
-                # ===== LAMPU =====
-                if "lampu" in text_lower or "teras" in text_lower:
-                    if any(k in text_lower for k in ["nyala", "hidup", "on"]):
-                        await tg_send(chat_id, "Menyalakan lampu...")
-                        await lamp_on()
-                        await tg_send(chat_id, "Lampu teras ON 💡")
-                        continue
-
-                    elif any(k in text_lower for k in ["mati", "off"]):
-                        await tg_send(chat_id, "Mematikan lampu...")
-                        await lamp_off()
-                        await tg_send(chat_id, "Lampu teras OFF 🌙")
-                        continue
-
-                # ===== AI =====
-                await tg_send(chat_id, "🤔...")
-                reply = await groq_chat([{"role": "user", "content": text}])
-                await tg_send(chat_id, reply)
-
-        except Exception as e:
-            print("[TG ERROR]", e)
-            await asyncio.sleep(5)
-
 # ================= MCP =================
 async def handle_mcp():
     async with websockets.connect(MCP_ENDPOINT) as ws:
-
         async for message in ws:
             data = json.loads(message)
             method = data.get("method", "")
@@ -237,7 +166,19 @@ async def handle_mcp():
                             {"name": "time"},
                             {"name": "sensor_rumah"},
                             {"name": "get_schedule"},
-                            {"name": "set_schedule"}
+                            {"name": "set_schedule"},
+                            {
+                                "name": "play_song",
+                                "description": "Putar lagu dari internet",
+                                "inputSchema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "song": {"type": "string"},
+                                        "artist": {"type": "string"}
+                                    },
+                                    "required": ["song"]
+                                }
+                            }
                         ]
                     }
                 }))
@@ -261,24 +202,33 @@ async def handle_mcp():
                     result = await get_schedule()
                 elif tool == "set_schedule":
                     args = data["params"].get("arguments", {})
-                    result = await set_schedule(args.get("on", "18:00"), args.get("off", "06:00"))
+                    result = await set_schedule(
+                        args.get("on", "18:00"),
+                        args.get("off", "06:00")
+                    )
+                elif tool == "play_song":
+                    args = data["params"].get("arguments", {})
+                    result = await play_song(
+                        args.get("song", ""),
+                        args.get("artist", "")
+                    )
                 else:
                     result = "Tool tidak dikenal"
 
                 await ws.send(json.dumps({
                     "jsonrpc": "2.0",
                     "id": msg_id,
-                    "result": {"content": [{"type": "text", "text": result}]}
+                    "result": {
+                        "content": [
+                            {"type": "text", "text": result}
+                        ]
+                    }
                 }))
 
 # ================= MAIN =================
 async def main():
-    print("🚀 Anggira FULL + SENSOR + JADWAL")
-
-    await asyncio.gather(
-        telegram_loop(),
-        handle_mcp()
-    )
+    print("🚀 Anggira FULL + MUSIC + SENSOR + JADWAL")
+    await asyncio.gather(handle_mcp())
 
 if __name__ == "__main__":
     asyncio.run(main())
